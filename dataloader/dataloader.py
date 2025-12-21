@@ -45,7 +45,7 @@ def getDataloader(args):
         db_train = CHASEDB1Dataset(base_dir=args.base_dir, mode="train", transform=train_transform)
         db_val = CHASEDB1Dataset(base_dir=args.base_dir, mode="val", transform=val_transform)
         db_test = CHASEDB1Dataset(base_dir=args.base_dir, mode="test", transform=val_transform)
-    elif args.dataset_name in ["bus","busi","isic18","tuscui"]: # for bus;busi;isic18;
+    elif args.dataset_name in ["bus","busi","isic18","tuscui","arcade"]: # for bus;busi;isic18;arcade
         db_train = MedicalDataSets(base_dir=args.base_dir, mode="train", transform=train_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
         db_val = MedicalDataSets(base_dir=args.base_dir, mode="val", transform=val_transform,
