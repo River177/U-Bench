@@ -143,13 +143,17 @@ class CBDDataset(Dataset):
              # print(f"Failed to read mask: {mask_path}")
              label = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
         
-        label = label[..., None] # Add channel dim
+        # Ensure image and mask have the same size
+        if image.shape[:2] != label.shape[:2]:
+            label = cv2.resize(label, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)
         
         if self.transform:
             augmented = self.transform(image=image, mask=label)
             image = augmented['image']
             label = augmented['mask']
         
+        label = label[..., None] # Add channel dim
+
         # Manual normalization/transpose if not done by transform
         if not isinstance(image, (np.ndarray, np.generic)):
              # Assume tensor

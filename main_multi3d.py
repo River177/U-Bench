@@ -413,6 +413,8 @@ if __name__ == "__main__":
         csv_file = f"./result/result_{args.dataset_name}_test.csv"
         file_exists = os.path.isfile(csv_file)
         val_metric={}
+        model, model_path = load_model(args, model_best_or_final="best")
+        logger.info(f"Loaded model from {model_path}")
         trainloader, valloader = getDataloader(args)
         performance, mean_hd95, mean_jacard, mean_asd = inference(args=args,model=model,logger=logger,testloader=valloader)                                
         val_metric["final_dice"]=performance
