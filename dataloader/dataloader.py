@@ -8,6 +8,7 @@ from dataloader.dataset_synapse import Synapse_dataset,RandomGenerator_synapse
 from dataloader.dataset_ACDC import ACDCdataset,RandomGenerator_ACDC    
 from dataloader.dataset_XRay import MontgomeryXRAYDataSet,MIHXRAYDataSet
 from dataloader.dataset_butterfly import CBDDataset
+from dataloader.dataset_xca import XCADataset
 
 from dataloader.download import get_MedSegBench_dataset 
 from dataloader.download import INFO as MedSegBench_dataset_name_dict
@@ -97,6 +98,11 @@ def getDataloader(args):
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
         db_val = CBDDataset(base_dir=args.base_dir, mode="val", transform=val_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
+    elif "xca_dataset" in args.base_dir or "xca" in args.base_dir.lower():
+        db_train = XCADataset(base_dir=args.base_dir, mode="train", transform=train_transform,
+                                train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
+        db_val = XCADataset(base_dir=args.base_dir, mode="val", transform=val_transform,
+                                train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
 
     elif args.dataset_name in MedSegBench_dataset_name_dict.keys():
         db_train = get_MedSegBench_dataset(flag=args.dataset_name, split="train", transform=train_transform,size=img_size)
@@ -154,6 +160,9 @@ def getZeroShotDataloader(args):
         db_val = MIHXRAYDataSet(base_dir=args.zero_shot_base_dir, mode="val", transform=val_transform)
     elif "cbd" in args.zero_shot_base_dir or "butterfly_200" in args.zero_shot_base_dir:
         db_val = CBDDataset(base_dir=args.zero_shot_base_dir, mode="test", transform=val_transform,
+                                train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
+    elif "xca_dataset" in args.zero_shot_base_dir or "xca" in args.zero_shot_base_dir.lower():
+        db_val = XCADataset(base_dir=args.zero_shot_base_dir, mode="test", transform=val_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
     elif args.zero_shot_dataset_name in MedSegBench_dataset_name_dict.keys():
         db_val = get_MedSegBench_dataset(flag=args.zero_shot_dataset_name, split="test", transform=val_transform,size=img_size)
