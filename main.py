@@ -152,7 +152,9 @@ def zero_shot(args,logger,model=None,wandb=None):
                   'SE': AverageMeter(),
                   'PC': AverageMeter(),
                   'F1': AverageMeter(),
-                  'ACC': AverageMeter()
+                  'ACC': AverageMeter(),
+                  'DSC': AverageMeter(),  # Dice Similarity Coefficient
+                  'HD95': AverageMeter()  # 95th percentile Hausdorff Distance
                   }
     model.eval()
 
@@ -165,21 +167,25 @@ def zero_shot(args,logger,model=None,wandb=None):
             output = output[-1] if args.do_deeps else output
             loss = criterion(output, target)
             
-            iou, _, SE, PC, F1, _, ACC = get_metrics(output, target)
+            iou, dice, SE, PC, F1, _, ACC, hd95_value = get_metrics(output, target)
             avg_meters['val_loss'].update(loss.item(), input.size(0))
             avg_meters['val_iou'].update(iou, input.size(0))
             avg_meters['SE'].update(SE, input.size(0))
             avg_meters['PC'].update(PC, input.size(0))
             avg_meters['F1'].update(F1, input.size(0))
             avg_meters['ACC'].update(ACC, input.size(0))
+            avg_meters['DSC'].update(dice, input.size(0))  # Dice (DSC)
+            avg_meters['HD95'].update(hd95_value, input.size(0))  # HD95
     logger.info(f"zero shot on {args.zero_shot_dataset_name}")
-    logger.info('val_loss %.4f - val_iou %.4f - val_SE %.4f - val_PC %.4f - val_F1 %.4f - val_ACC %.4f'
+    logger.info('val_loss %.4f - val_iou %.4f - val_SE %.4f - val_PC %.4f - val_F1 %.4f - val_ACC %.4f - DSC %.4f - HD95 %.4f'
         % (avg_meters['val_loss'].avg, avg_meters['val_iou'].avg, avg_meters['SE'].avg,
-            avg_meters['PC'].avg, avg_meters['F1'].avg, avg_meters['ACC'].avg))
+            avg_meters['PC'].avg, avg_meters['F1'].avg, avg_meters['ACC'].avg,
+            avg_meters['DSC'].avg, avg_meters['HD95'].avg))
 
     
     zero_shot_result = {"zeroshot_loss":avg_meters['val_loss'].avg, "zeroshot_iou":avg_meters['val_iou'].avg, "zeroshot_SE":avg_meters['SE'].avg,
-            "zeroshot_PC":avg_meters['PC'].avg, "zeroshot_F1":avg_meters['F1'].avg, "zeroshot_ACC":avg_meters['ACC'].avg}
+            "zeroshot_PC":avg_meters['PC'].avg, "zeroshot_F1":avg_meters['F1'].avg, "zeroshot_ACC":avg_meters['ACC'].avg,
+            "zeroshot_DSC":avg_meters['DSC'].avg, "zeroshot_HD95":avg_meters['HD95'].avg}
     zero_shot_result = convert_to_numpy(zero_shot_result)
     return zero_shot_result
 
@@ -224,7 +230,9 @@ def validate(args,logger,model):
                 'SE': AverageMeter(),
                 'PC': AverageMeter(),
                 'F1': AverageMeter(),
-                'ACC': AverageMeter()
+                'ACC': AverageMeter(),
+                'DSC': AverageMeter(),  # Dice Similarity Coefficient
+                'HD95': AverageMeter()  # 95th percentile Hausdorff Distance
                 }
     model.eval()
     with torch.no_grad():
@@ -236,17 +244,25 @@ def validate(args,logger,model):
             output = output[-1] if args.do_deeps else output
             loss = criterion(output, target)
             
-            iou, _, SE, PC, F1, _, ACC = get_metrics(output, target)
+            iou, dice, SE, PC, F1, _, ACC, hd95_value = get_metrics(output, target)
             avg_meters['val_loss'].update(loss.item(), input.size(0))
             avg_meters['val_iou'].update(iou, input.size(0))
             avg_meters['SE'].update(SE, input.size(0))
             avg_meters['PC'].update(PC, input.size(0))
             avg_meters['F1'].update(F1, input.size(0))
             avg_meters['ACC'].update(ACC, input.size(0))
+            avg_meters['DSC'].update(dice, input.size(0))  # Dice (DSC)
+            avg_meters['HD95'].update(hd95_value, input.size(0))  # HD95
 
     val_metric_dict = {
-        "val_loss":avg_meters['val_loss'].avg, "val_iou":avg_meters['val_iou'].avg, "val_SE":avg_meters['SE'].avg,
-            "val_PC":avg_meters['PC'].avg, "val_F1":avg_meters['F1'].avg, "val_ACC":avg_meters['ACC'].avg
+        "val_loss":avg_meters['val_loss'].avg, 
+        "val_iou":avg_meters['val_iou'].avg, 
+        "val_SE":avg_meters['SE'].avg,
+        "val_PC":avg_meters['PC'].avg, 
+        "val_F1":avg_meters['F1'].avg, 
+        "val_ACC":avg_meters['ACC'].avg,
+        "DSC":avg_meters['DSC'].avg,  # Dice Similarity Coefficient
+        "HD95":avg_meters['HD95'].avg  # 95th percentile Hausdorff Distance
     }
     val_metric_dict = convert_to_numpy(val_metric_dict)
     return val_metric_dict
@@ -327,7 +343,7 @@ def train(args,exp_save_dir, writer, logger, model):
                 loss = criterion(outputs, label_batch)
 
 
-            iou, dice, _, _, _, _, _ = get_metrics(outputs, label_batch)
+                iou, dice, _, _, _, _, _, _ = get_metrics(outputs, label_batch)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -350,7 +366,7 @@ def train(args,exp_save_dir, writer, logger, model):
                 output = output[-1] if args.do_deeps else output
                 loss = criterion(output, target)
                 
-                iou, _, SE, PC, F1, _, ACC = get_metrics(output, target)
+                iou, _, SE, PC, F1, _, ACC, _ = get_metrics(output, target)
                 avg_meters['val_loss'].update(loss.item(), input.size(0))
                 avg_meters['val_iou'].update(iou, input.size(0))
                 avg_meters['SE'].update(SE, input.size(0))
