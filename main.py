@@ -1,14 +1,4 @@
 import os
-
-cpu_num = 1
-os.environ['OMP_NUM_THREADS'] = str(cpu_num)
-os.environ['OPENBLAS_NUM_THREADS'] = str(cpu_num)
-os.environ['MKL_NUM_THREADS'] = str(cpu_num)
-os.environ['VECLIB_MAXIMUM_THREADS'] = str(cpu_num)
-os.environ['NUMEXPR_NUM_THREADS'] = str(cpu_num)
-
-
-
 import random
 import argparse
 from tqdm import tqdm
@@ -18,16 +8,13 @@ import logging
 import numpy as np
 import torch
 
-torch.set_num_threads(cpu_num)
-torch.multiprocessing.set_sharing_strategy('file_system')
-
 import wandb
 import torch.optim as optim
 from monai.losses import DiceCELoss, DiceLoss
 import csv
-device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
-print(f"Using device: {device}")
+device = None  # will be configured after argument parsing
 from models import build_model
+
 import utils.losses as losses
 from utils.metrics_medpy import get_metrics
 from utils.util import AverageMeter
@@ -37,15 +24,8 @@ from dataloader.dataloader import getDataloader,getZeroShotDataloader
 import torch.nn.functional as F
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--gpu', type=str, default="7", help='gpu')
-temp_args, _ = parser.parse_known_args()
-os.environ["CUDA_VISIBLE_DEVICES"] = temp_args.gpu
-print(f"Set CUDA_VISIBLE_DEVICES to {os.environ['CUDA_VISIBLE_DEVICES']}")
-
-
-
 def convert_to_numpy(data):
+
     if isinstance(data, torch.Tensor):
         return data.cpu().numpy()
     elif isinstance(data, dict):
@@ -100,6 +80,35 @@ def parse_arguments():
 
 args = parse_arguments()
 
+
+def configure_device(gpu_arg: str):
+    global device
+    if gpu_arg.lower() == "cpu":
+        device = torch.device("cpu")
+        print(f"Using device: {device} (gpu argument: {gpu_arg})")
+        return
+
+    if not torch.cuda.is_available():
+        print("[WARN] CUDA not available, falling back to CPU.")
+        device = torch.device("cpu")
+        return
+
+    primary_gpu = gpu_arg.split(",")[0].strip()
+    if primary_gpu == "":
+        primary_gpu = "0"
+
+    try:
+        gpu_index = int(primary_gpu)
+    except ValueError:
+        print(f"[WARN] Invalid gpu argument '{gpu_arg}', defaulting to GPU 0.")
+        gpu_index = 0
+
+    torch.cuda.set_device(gpu_index)
+    device = torch.device(f"cuda:{gpu_index}")
+    print(f"Using device: {device} (gpu argument: {gpu_arg})")
+
+
+configure_device(args.gpu)
 
 
 def deep_supervision_loss(outputs, label_batch, loss_metric,weights=None):

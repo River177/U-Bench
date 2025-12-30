@@ -27,9 +27,8 @@ class XCADataset(Dataset):
                     ...
     
     注意：
-    - 只使用CATH版本的标注
-    - CATH标注中：白色(255)表示狭窄/斑块区域，灰白色(127)表示其余血管
-    - 统一处理：将白色和灰白色都视为血管（前景），统一为1
+    - 默认使用普通版本标注（非 CATH），若缺失再回退到 CATH
+    - 标注中白色/灰白色都视为血管（前景），统一为 1
     """
     def __init__(
         self,
@@ -88,10 +87,10 @@ class XCADataset(Dataset):
             if not os.path.exists(gt_path):
                 continue
             
-            # 遍历 ground_truth 下的所有序列目录，只处理CATH版本
+            # 遍历 ground_truth 下的所有序列目录，只处理非 CATH 版本
             sequence_dirs = [d for d in os.listdir(gt_path) 
                            if os.path.isdir(os.path.join(gt_path, d))
-                           and 'CATH' in d]  # 只扫描CATH版本的序列
+                           and 'CATH' not in d]  # 只扫描普通版本的序列
             
             for sequence_id in sequence_dirs:
                 gt_seq_path = os.path.join(gt_path, sequence_id)
@@ -102,13 +101,13 @@ class XCADataset(Dataset):
                 for gt_file in gt_files:
                     frame_id = os.path.basename(gt_file)
                     
-                    # 构建图像路径（去掉CATH后缀）
-                    base_sequence = sequence_id.replace('CATH', '')
+                    # 普通序列直接使用原名称
+                    base_sequence = sequence_id
                     img_seq_path = os.path.join(case_path, 'images', base_sequence)
                     
-                    # 如果原始序列不存在，尝试带CATH的序列
+                    # 如果原始序列不存在，尝试 CATH 版本目录
                     if not os.path.exists(img_seq_path):
-                        img_seq_path = os.path.join(case_path, 'images', sequence_id)
+                        img_seq_path = os.path.join(case_path, 'images', sequence_id + 'CATH')
                     
                     img_file = os.path.join(img_seq_path, frame_id)
                     
@@ -156,12 +155,13 @@ class XCADataset(Dataset):
         if img_path is None:
             img_path = img_paths[0]
         
-        # 标注路径 - 优先使用CATH版本
+        # 标注路径 - 优先使用普通版本，缺失时回退至 CATH
         base_sequence = sequence_id.replace('CATH', '')
         gt_paths = [
-            os.path.join(case_path, 'ground_truth', base_sequence + 'CATH', frame_id),  # 优先CATH版本
+            os.path.join(case_path, 'ground_truth', base_sequence, frame_id),  # 优先普通版本
+            os.path.join(case_path, 'ground_truth', sequence_id, frame_id),
+            os.path.join(case_path, 'ground_truth', base_sequence + 'CATH', frame_id),  # 回退：CATH版本
             os.path.join(case_path, 'ground_truth', sequence_id + 'CATH', frame_id),
-            os.path.join(case_path, 'ground_truth', sequence_id, frame_id),  # 备用：普通版本
         ]
         
         gt_path = None

@@ -193,7 +193,7 @@ def calculate_dice_percase(pred, gt):
 def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_save_path=None, case=None, z_spacing=1,do_deeps=False):
     image, label = image.squeeze(0).cpu().detach().numpy(), label.squeeze(0).cpu().detach().numpy()
     device = next(net.parameters()).device if next(net.parameters(), None) is not None else torch.device('cpu')
-    if len(image.shape) == 3:
+    if len(label.shape) == 3:
         prediction = np.zeros_like(label)
         for ind in range(image.shape[0]):
             slice = image[ind, :, :]
@@ -219,11 +219,22 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
                     pred = out
                 prediction[ind] = pred
     else:
-        input = torch.from_numpy(image).unsqueeze(
-            0).unsqueeze(0).float().to(device)
+        slice_img = image
+        if len(slice_img.shape) == 3:
+            input = torch.from_numpy(slice_img).unsqueeze(0).float().to(device)
+            if slice_img.shape[0] == 1:
+                input = input.repeat(1, 3, 1, 1)
+        else:
+            x, y = slice_img.shape[0], slice_img.shape[1]
+            if x != patch_size[0] or y != patch_size[1]:
+                slice_img = zoom(slice_img, (patch_size[0] / x, patch_size[1] / y), order=3)
+            input = torch.from_numpy(slice_img).unsqueeze(0).unsqueeze(0).float().to(device)
+            input = input.repeat(1, 3, 1, 1)
         net.eval()
         with torch.no_grad():
             outputs = net(input)
+            if do_deeps and isinstance(outputs, (list, tuple)):
+                outputs = outputs[-1]
             out = torch.argmax(torch.softmax(outputs, dim=1), dim=1).squeeze(0)
             prediction = out.cpu().detach().numpy()
     metric_list = []

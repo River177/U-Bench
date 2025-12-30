@@ -94,7 +94,7 @@ def explore_patient_folder(patient_path):
 
 def main():
     # 数据集根目录
-    dataset_root = r"d:\曲线分割\U-Bench\data\bingren2-15"
+    dataset_root = r"d:\曲线分割\U-Bench\data\bingren"
     
     if not os.path.exists(dataset_root):
         # 尝试 Linux 路径

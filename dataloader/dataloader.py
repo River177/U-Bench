@@ -9,6 +9,7 @@ from dataloader.dataset_ACDC import ACDCdataset,RandomGenerator_ACDC
 from dataloader.dataset_XRay import MontgomeryXRAYDataSet,MIHXRAYDataSet
 from dataloader.dataset_butterfly import CBDDataset
 from dataloader.dataset_xca import XCADataset
+from dataloader.dataset_bingren import BingrenDataset, BingrenDatasetBinary, RandomGenerator_bingren
 
 from dataloader.download import get_MedSegBench_dataset 
 from dataloader.download import INFO as MedSegBench_dataset_name_dict
@@ -103,6 +104,20 @@ def getDataloader(args):
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
         db_val = XCADataset(base_dir=args.base_dir, mode="val", transform=val_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
+
+    elif "bingren" in args.base_dir or args.dataset_name == "bingren":
+        # bingren 多器官分割数据集
+        from albumentations.core.composition import Compose as AlbuCompose
+        bingren_train_transform = AlbuCompose([
+            RandomGenerator_bingren(output_size=[args.img_size, args.img_size])
+        ])
+        bingren_val_transform = AlbuCompose([
+            RandomGenerator_bingren(output_size=[args.img_size, args.img_size])
+        ])
+        db_train = BingrenDataset(base_dir=args.base_dir, split="train", nclass=args.num_classes,
+                                   transform=bingren_train_transform)
+        db_val = BingrenDataset(base_dir=args.base_dir, split="valid", nclass=args.num_classes,
+                                 transform=bingren_val_transform)
 
     elif args.dataset_name in MedSegBench_dataset_name_dict.keys():
         db_train = get_MedSegBench_dataset(flag=args.dataset_name, split="train", transform=train_transform,size=img_size)
