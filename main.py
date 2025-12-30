@@ -351,8 +351,7 @@ def train(args,exp_save_dir, writer, logger, model):
                 outputs = model(volume_batch)
                 loss = criterion(outputs, label_batch)
 
-
-                iou, dice, _, _, _, _, _, _ = get_metrics(outputs, label_batch)
+            iou, dice, _, _, _, _, _, _ = get_metrics(outputs, label_batch)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
