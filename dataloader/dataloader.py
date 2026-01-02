@@ -8,7 +8,7 @@ from dataloader.dataset_synapse import Synapse_dataset,RandomGenerator_synapse
 from dataloader.dataset_ACDC import ACDCdataset,RandomGenerator_ACDC    
 from dataloader.dataset_XRay import MontgomeryXRAYDataSet,MIHXRAYDataSet
 from dataloader.dataset_butterfly import CBDDataset
-from dataloader.dataset_xca import XCADataset
+from dataloader.dataset_xca import XCADataset, XCADNewDataset
 from dataloader.dataset_bingren import BingrenDataset, BingrenDatasetBinary, RandomGenerator_bingren
 
 from dataloader.download import get_MedSegBench_dataset 
@@ -99,7 +99,14 @@ def getDataloader(args):
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
         db_val = CBDDataset(base_dir=args.base_dir, mode="val", transform=val_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
+    elif "XCAD" in args.base_dir and "xca_dataset" not in args.base_dir:
+        # 新的 XCAD 数据集（test/images 和 test/masks 格式）
+        db_train = XCADNewDataset(base_dir=args.base_dir, mode="train", transform=train_transform,
+                                train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
+        db_val = XCADNewDataset(base_dir=args.base_dir, mode="val", transform=val_transform,
+                                train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
     elif "xca_dataset" in args.base_dir or "xca" in args.base_dir.lower():
+        # 旧的 xca_dataset (CVAI-* 格式)
         db_train = XCADataset(base_dir=args.base_dir, mode="train", transform=train_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
         db_val = XCADataset(base_dir=args.base_dir, mode="val", transform=val_transform,
@@ -176,7 +183,12 @@ def getZeroShotDataloader(args):
     elif "cbd" in args.zero_shot_base_dir or "butterfly_200" in args.zero_shot_base_dir:
         db_val = CBDDataset(base_dir=args.zero_shot_base_dir, mode="test", transform=val_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
+    elif "XCAD" in args.zero_shot_base_dir and "xca_dataset" not in args.zero_shot_base_dir:
+        # 新的 XCAD 数据集（test/images 和 test/masks 格式）
+        db_val = XCADNewDataset(base_dir=args.zero_shot_base_dir, mode="test", transform=val_transform,
+                                train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
     elif "xca_dataset" in args.zero_shot_base_dir or "xca" in args.zero_shot_base_dir.lower():
+        # 旧的 xca_dataset (CVAI-* 格式)
         db_val = XCADataset(base_dir=args.zero_shot_base_dir, mode="test", transform=val_transform,
                                 train_file_dir=args.train_file_dir, val_file_dir=args.val_file_dir)
     elif args.zero_shot_dataset_name in MedSegBench_dataset_name_dict.keys():
