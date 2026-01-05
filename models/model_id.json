@@ -557,5 +557,10 @@
         "modelname": "MedVKAN",
         "id": 114,
         "filename": "MedVKAN.py"
+    },
+    {
+        "modelname": "FUTANet",
+        "id": 115,
+        "filename": "FUTANet/FUTANet.py"
     }
 ]

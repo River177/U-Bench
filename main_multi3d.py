@@ -97,6 +97,8 @@ def parse_arguments():
     parser.add_argument('--deterministic', type=int, default=1, help='whether use deterministic training')
     parser.add_argument('--z_spacing', type=float, default=1, help='z_spacing of CT scan')
     parser.add_argument('--do_deeps', type=bool, default=False, help='Use deep supervision')
+    parser.add_argument('--pretrained', action='store_true', default=True, help='Whether to use pretrained weights (if supported by the model)')
+    parser.add_argument('--no_pretrained', dest='pretrained', action='store_false', help='Disable pretrained weights')
 
 
     parser.add_argument('--val_interval', type=int, default=1, help='val_interval')
@@ -144,7 +146,7 @@ def deep_supervision_loss(outputs, label_batch, ce_loss,dice_loss,weights=None):
 
 def load_model(args, model_best_or_final="best"):
     exp_save_dir= args.exp_save_dir
-    model = build_model(args, input_channel=args.input_channel, num_classes=args.num_classes)
+    model = build_model(args, input_channel=args.input_channel, num_classes=args.num_classes, pretrained=args.pretrained)
 
     if model_best_or_final == "best":
         model_path = os.path.join(exp_save_dir, f'checkpoint_best.pth')
@@ -237,7 +239,7 @@ def init_dir(args):
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
-    model = build_model(config=args,input_channel=args.input_channel, num_classes=args.num_classes).to(device)
+    model = build_model(config=args,input_channel=args.input_channel, num_classes=args.num_classes, pretrained=args.pretrained).to(device)
 
 
     return exp_save_dir, writer, logger, model#, wandb
@@ -416,7 +418,13 @@ if __name__ == "__main__":
         model, model_path = load_model(args, model_best_or_final="best")
         logger.info(f"Loaded model from {model_path}")
         trainloader, valloader = getDataloader(args)
-        performance, mean_hd95, mean_jacard, mean_asd = inference(args=args,model=model,logger=logger,testloader=valloader)                                
+        
+        # 设置预测结果保存路径（DICOM 格式）
+        test_save_path = os.path.join(exp_save_dir, 'dicom_predictions')
+        os.makedirs(test_save_path, exist_ok=True)
+        logger.info(f"Prediction results will be saved to: {test_save_path}")
+        
+        performance, mean_hd95, mean_jacard, mean_asd = inference(args=args,model=model,logger=logger,testloader=valloader, test_save_path=test_save_path)                                
         val_metric["final_dice"]=performance
         val_metric["final_hd95"]=mean_hd95
         val_metric["final_jacard"]=mean_jacard
@@ -428,6 +436,7 @@ if __name__ == "__main__":
             if not file_exists:
                 writer.writeheader()
             writer.writerow(row_data)
+        logger.info(f"All prediction DICOM files saved to: {test_save_path}")
         exit()
     #try:
     csv_file = f"./result/result_{args.dataset_name}_train.csv"

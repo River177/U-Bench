@@ -114,8 +114,11 @@ class BingrenDataset(Dataset):
         image = data['img'].astype(np.float32)  # CT 图像
         label = data['label'].astype(np.int64)  # 分割标签
         
-        # 测试集是 3D 体积，不应用变换
-        if self.split == 'test':
+        # 检测数据维度：3D 体积 (D, H, W) 或 2D 切片 (H, W)
+        is_3d = len(image.shape) == 3
+        
+        # 3D 体积（测试集或验证集的3D格式），不应用变换
+        if is_3d or self.split == 'test':
             # 3D 体积: 返回 tensor 格式用于 test_single_volume
             # 归一化 CT 值到 [0, 1]
             image = (image - image.min()) / (image.max() - image.min() + 1e-8)
@@ -129,7 +132,7 @@ class BingrenDataset(Dataset):
             }
             return sample
         
-        # 训练/验证集是 2D 切片
+        # 训练集是 2D 切片
         # 归一化 CT 值到 [0, 1]
         image = (image - image.min()) / (image.max() - image.min() + 1e-8)
         

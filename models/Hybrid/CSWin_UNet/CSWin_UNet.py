@@ -63,7 +63,8 @@ class CSwinUnet(nn.Module):
             print("none pretrain")
 
 
-def cswin_unet(num_classes, input_channel=3):
+def cswin_unet(num_classes, input_channel=3, pretrained=True):
     model = CSwinUnet(input_channel=input_channel, num_classes=num_classes, img_size=256)
-    model.load_from()
+    if pretrained:
+        model.load_from()
     return model

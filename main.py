@@ -73,6 +73,8 @@ def parse_arguments():
     parser.add_argument('--model_id', type=int, default=0, help='model_id')
     parser.add_argument('--just_for_test', type=bool, default=0, help='just for test')
     parser.add_argument('--just_for_zero_shot', type=bool, default=0, help='just for test')
+    parser.add_argument('--pretrained', action='store_true', default=True, help='Whether to use pretrained weights (if supported by the model)')
+    parser.add_argument('--no_pretrained', dest='pretrained', action='store_false', help='Disable pretrained weights')
     args = parser.parse_args()
     seed_torch(args.seed)
     return args
@@ -126,7 +128,7 @@ def deep_supervision_loss(outputs, label_batch, loss_metric,weights=None):
 
 def load_model(args, model_best_or_final="best"):
     exp_save_dir= args.exp_save_dir
-    model = build_model(args, input_channel=args.input_channel, num_classes=args.num_classes).to(device)
+    model = build_model(args, input_channel=args.input_channel, num_classes=args.num_classes, pretrained=args.pretrained).to(device)
     if model_best_or_final == "best":
         model_path = os.path.join(exp_save_dir, f'checkpoint_best.pth')
 
@@ -224,7 +226,7 @@ def init_dir(args):
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
-    model = build_model(config=args,input_channel=args.input_channel, num_classes=args.num_classes).to(device)
+    model = build_model(config=args,input_channel=args.input_channel, num_classes=args.num_classes, pretrained=args.pretrained).to(device)
 
     return exp_save_dir, writer, logger, model#, wandb
 

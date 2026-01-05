@@ -48,6 +48,7 @@ from .CNN.Perspective_Unet.Perspective_Unet import perspective_unet as Perspecti
 from .CNN.ESKNet.ESKNet import esknet as ESKNet
 from .CNN.CPCANet.CPCANet import cpcanet as CPCANet
 from .CNN.UTANet.UTANet import utanet as UTANet
+from .CNN.FUTANet.FUTANet import futanet as FUTANet
 from .CNN.DDS_UNet.DDS_UNet import dds_unet as DDS_UNet
 from .CNN.MCA_UNet.MCA_UNet import mca_unet as MCA_UNet
 from .CNN.MDSA_UNet.MDSA_UNet import mdsa_unet as MDSA_UNet
@@ -174,19 +175,29 @@ def build_model(config,**kwargs):
     
     model_class = globals()[model_name]
     
-    # Get the signature of the model's constructor
-    sig = inspect.signature(model_class.__init__)
-    
-    # Filter out kwargs that are not in the constructor's signature
-    model_args = {k: v for k, v in kwargs.items() if k in sig.parameters}
-    print(f" kwargs: {model_args}")
-    if 'self' not in model_args:
-        return model_class(**kwargs)
+    # Check if model_class is a function or a class
+    if inspect.isfunction(model_class):
+        # For function-type models, get the function signature directly
+        sig = inspect.signature(model_class)
+        # Filter out kwargs that are not in the function's signature
+        model_args = {k: v for k, v in kwargs.items() if k in sig.parameters}
+        print(f" kwargs: {model_args}")
+        print(f"Building model {model_name} with arguments: {model_args}")
+        return model_class(**model_args)
+    else:
+        # For class-type models, get the constructor signature
+        sig = inspect.signature(model_class.__init__)
+        
+        # Filter out kwargs that are not in the constructor's signature
+        model_args = {k: v for k, v in kwargs.items() if k in sig.parameters}
+        print(f" kwargs: {model_args}")
+        if 'self' not in model_args:
+            return model_class(**kwargs)
 
 
-    # Check for unexpected arguments
-    unexpected_args = {k: v for k, v in kwargs.items() if k not in sig.parameters and k != 'self'}
-    if unexpected_args:
-        raise TypeError(f"Got unexpected keyword arguments: {list(unexpected_args.keys())}")
-    print(f"Building model {model_name} with arguments: {model_args}")
-    return model_class(**model_args)
+        # Check for unexpected arguments
+        unexpected_args = {k: v for k, v in kwargs.items() if k not in sig.parameters and k != 'self'}
+        if unexpected_args:
+            raise TypeError(f"Got unexpected keyword arguments: {list(unexpected_args.keys())}")
+        print(f"Building model {model_name} with arguments: {model_args}")
+        return model_class(**model_args)
