@@ -240,7 +240,7 @@ class FUTANet(nn.Module):
             nn.ReLU(inplace=True)
         )
 
-    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         前向传播流程：
         1. 提取频率特征（拉普拉斯金字塔）
@@ -255,7 +255,6 @@ class FUTANet(nn.Module):
         
         Returns:
             logits: 分割输出 (B, n_classes, H, W)
-            aux_loss: MoE辅助损失
         """
         # ========== 频率特征提取 ==========
         # 将RGB图像转换为灰度图并提取边缘特征
@@ -316,7 +315,9 @@ class FUTANet(nn.Module):
         # ========== 预测输出 ==========
         logits = self.pred(d1)
 
-        return logits, aux_loss
+        # 注意：aux_loss 目前未使用，但可以在未来集成到损失函数中
+        # 为了与训练框架兼容，只返回 logits
+        return logits
     
 
 def futanet(input_channel=3, num_classes=1, pretrained=True, topk=2):
@@ -347,11 +348,10 @@ if __name__ == "__main__":
     model.eval()
 
     with torch.no_grad():
-        output, loss = model(input_tensor)
+        output = model(input_tensor)
     
     print(f"Input shape: {input_tensor.shape}")
     print(f"Output shape: {output.shape}")
-    print(f"Auxiliary loss: {loss.item()}")
     print("\n模型创新点：")
     print("1. 引入拉普拉斯金字塔提取高频边缘特征")
     print("2. 对编码器各层应用频率增强（频率×特征+残差）")

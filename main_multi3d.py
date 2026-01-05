@@ -215,7 +215,23 @@ def val(valloader,net,Best_dcs ):
     print("val avg_dsc: %f" % (performance))
     return performance 
 def init_dir(args):
-    exp_save_dir = f'./output/{args.model}/{args.dataset_name}/{args.exp_name}/'
+    # 从 base_dir 中提取批次名称（如果存在）
+    batch_name = None
+    if 'bingren' in args.base_dir.lower():
+        # 提取批次名称，例如从 "data/bingren_processed_by_batch/bingren1-50" 提取 "bingren1-50"
+        base_dir_parts = args.base_dir.replace('\\', '/').split('/')
+        for part in base_dir_parts:
+            if part.startswith('bingren') and ('-' in part or part.endswith('50') or part.endswith('15') or part.endswith('17') or part.endswith('13') or part.endswith('11')):
+                batch_name = part
+                break
+        
+        if batch_name:
+            exp_save_dir = f'./output/{args.model}/{args.dataset_name}_{batch_name}/{args.exp_name}/'
+        else:
+            exp_save_dir = f'./output/{args.model}/{args.dataset_name}/{args.exp_name}/'
+    else:
+        exp_save_dir = f'./output/{args.model}/{args.dataset_name}/{args.exp_name}/'
+    
     os.makedirs(exp_save_dir, exist_ok=True)
     args.exp_save_dir = exp_save_dir
 
@@ -412,7 +428,19 @@ if __name__ == "__main__":
 
     row_data=vars(args)
     if args.just_for_test:
-        csv_file = f"./result/result_{args.dataset_name}_test.csv"
+        # 从 base_dir 中提取批次名称（如果存在）
+        batch_name = None
+        if 'bingren' in args.base_dir.lower():
+            base_dir_parts = args.base_dir.replace('\\', '/').split('/')
+            for part in base_dir_parts:
+                if part.startswith('bingren') and ('-' in part or part.endswith('50') or part.endswith('15') or part.endswith('17') or part.endswith('13') or part.endswith('11')):
+                    batch_name = part
+                    break
+        
+        if batch_name:
+            csv_file = f"./result/result_{args.dataset_name}_{batch_name}_test.csv"
+        else:
+            csv_file = f"./result/result_{args.dataset_name}_test.csv"
         file_exists = os.path.isfile(csv_file)
         val_metric={}
         model, model_path = load_model(args, model_best_or_final="best")
@@ -439,7 +467,19 @@ if __name__ == "__main__":
         logger.info(f"All prediction DICOM files saved to: {test_save_path}")
         exit()
     #try:
-    csv_file = f"./result/result_{args.dataset_name}_train.csv"
+    # 从 base_dir 中提取批次名称（如果存在）
+    batch_name = None
+    if 'bingren' in args.base_dir.lower():
+        base_dir_parts = args.base_dir.replace('\\', '/').split('/')
+        for part in base_dir_parts:
+            if part.startswith('bingren') and ('-' in part or part.endswith('50') or part.endswith('15') or part.endswith('17') or part.endswith('13') or part.endswith('11')):
+                batch_name = part
+                break
+    
+    if batch_name:
+        csv_file = f"./result/result_{args.dataset_name}_{batch_name}_train.csv"
+    else:
+        csv_file = f"./result/result_{args.dataset_name}_train.csv"
     file_exists = os.path.isfile(csv_file)
     best_metric,final_metric = trainer_multi3d(args,exp_save_dir, writer, logger, model)        
     print("Best performance: ", best_metric)
