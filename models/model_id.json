@@ -562,5 +562,15 @@
         "modelname": "FUTANet",
         "id": 115,
         "filename": "FUTANet/FUTANet.py"
+    },
+    {
+        "modelname": "VSSUTANet",
+        "id": 116,
+        "filename": "Mamba/VSSUTANet/VSSUTANet.py"
+    },
+    {
+        "modelname": "DualBranchVSSNet",
+        "id": 117,
+        "filename": "Mamba/DualBranchVSSNet/DualBranchVSSNet.py"
     }
 ]

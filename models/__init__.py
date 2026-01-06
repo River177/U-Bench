@@ -111,6 +111,8 @@ from .Mamba.VMUNet.VMUNet import vmunet as VMUNet
 from .Mamba.VMUNetV2.VMUNetV2 import vmunetv2 as VMUNetV2
 from .Mamba.CFM_UNet.CFM_UNet import cfm_unet as CFM_UNet
 from .Mamba.MedVKAN.MedVKAN import medvkan as MedVKAN
+from .Mamba.VSSUTANet.VSSUTANet import vssutanet as VSSUTANet
+from .Mamba.DualBranchVSSNet.DualBranchVSSNet import dualbranchvssnet as DualBranchVSSNet
 
 
 def load_model_lazily(config):
