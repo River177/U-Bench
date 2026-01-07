@@ -179,8 +179,24 @@ def inference(args, model, testloader,logger, test_save_path=None):
     metric_list = 0.0
     with torch.no_grad():
         for i_batch, sampled_batch in tqdm(enumerate(testloader)):
-            h, w = sampled_batch["image"].size()[2:]
             image, label, case_name = sampled_batch["image"], sampled_batch["label"], sampled_batch['case_name'][0]
+            
+            # 处理3D数据：如果是5D (B, 1, D, H, W) 或 4D (B, D, H, W)，需要调整
+            # test_single_volume 期望输入是 [1, D, H, W] 或 [D, H, W]
+            if len(image.shape) == 5:
+                # (B, 1, D, H, W) -> (1, D, H, W)
+                image = image.squeeze(0)  # 移除batch维度
+                label = label.squeeze(0)
+            elif len(image.shape) == 4:
+                # 判断是 (B, C, H, W) 还是 (B, D, H, W)
+                if image.shape[1] == 1 or image.shape[1] == 3:
+                    # (B, C, H, W) - 2D数据，保持原样
+                    pass
+                else:
+                    # (B, D, H, W) - 3D数据，移除batch维度
+                    image = image.squeeze(0)  # (D, H, W)
+                    label = label.squeeze(0)
+            
             metric_i = test_single_volume(image=image, label=label, net=model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
                                           test_save_path=test_save_path, case=case_name, z_spacing=args.z_spacing, do_deeps=args.do_deeps)
             metric_list += np.array(metric_i)

@@ -35,6 +35,28 @@ class RandomGenerator_bingren(object):
         self.output_size = output_size
 
     def __call__(self, image, mask, force_apply=False, **kwargs):
+        """
+        说明:
+            原始设计中, 这里的 image 应该是 2D 数组 [H, W]。
+            但在实际使用中, 可能会传入 3D 数组 (例如 [H, W, C] 或 [C, H, W])。
+            为了避免报错, 这里做一次鲁棒性处理, 将其压缩为 2D 再做增强。
+        """
+        # 保证 image 是 2D [H, W]
+        if image.ndim == 3:
+            # 如果是 HWC, 取第一个通道; 如果是 CHW, 同样取第一个通道
+            # 这里只做简单处理, 对 bingren 训练来说输入本来就是单通道 CT, 不会影响正常情况
+            if image.shape[-1] <= 4:  # 形如 [H, W, C]
+                image = image[..., 0]
+            else:  # 形如 [C, H, W]
+                image = image[0]
+        elif image.ndim > 3:
+            # 非预期情况, 直接压到最后两个维度
+            image = image.reshape(image.shape[-2], image.shape[-1])
+
+        # 保证 mask 与 image 维度一致 (2D)
+        if mask.ndim > 2:
+            mask = mask.squeeze()
+
         if random.random() > 0.5:
             image, mask = random_rot_flip(image, mask)
         elif random.random() > 0.5:
