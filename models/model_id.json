@@ -572,5 +572,30 @@
         "modelname": "DualBranchVSSNet",
         "id": 117,
         "filename": "Mamba/DualBranchVSSNet/DualBranchVSSNet.py"
+    },
+    {
+        "modelname": "SegFormerUTANet",
+        "id": 118,
+        "filename": "CNN/SegformerUTANet/SegFormerUTANet.py"
+    },
+    {
+        "modelname": "UTANet_EAG",
+        "id": 119,
+        "filename": "Exp/UTANet_EAG/UTANet_EAG.py"
+    },
+    {
+        "modelname": "UTANet_SAE",
+        "id": 120,
+        "filename": "Exp/UTANet_SAE/UTANet_SAE.py"
+    },
+    {
+        "modelname": "UTANet_ESTF",
+        "id": 121,
+        "filename": "Exp/UTANet_ESTF/UTANet_ESTF.py"
+    },
+    {
+        "modelname": "UTANet_EAG_SAE_ESTF",
+        "id": 122,
+        "filename": "Exp/UTANet_EAG_SAE_ESTF/UTANet_EAG_SAE_ESTF.py"
     }
 ]
