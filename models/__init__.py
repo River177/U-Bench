@@ -55,6 +55,12 @@ from .CNN.MDSA_UNet.MDSA_UNet import mdsa_unet as MDSA_UNet
 from .CNN.U_KAN.U_KAN import u_kan as U_KAN
 from .CNN.ResU_KAN.ResU_KAN import resu_kan as ResU_KAN
 from .CNN.RAT_Net.RAT_Net import rat_net as RAT_Net
+from .CNN.SegformerUTANet.SegFormerUTANet import segformer_utanet as SegFormerUTANet
+
+from .Exp.UTANet_EAG.UTANet_EAG import utanet_eag as UTANet_EAG
+from .Exp.UTANet_SAE.UTANet_SAE import utanet_sae as UTANet_SAE
+from .Exp.UTANet_ESTF.UTANet_ESTF import utanet_estf as UTANet_ESTF
+from .Exp.UTANet_EAG_SAE_ESTF.UTANet_EAG_SAE_ESTF import utanet_eag_sae_estf as UTANet_EAG_SAE_ESTF
 
 from .Hybrid.AURA_Net.AURA_Net import aura_net as AURA_Net
 from .Hybrid.BEFUnet.BEFUnet import befunet as BEFUnet
