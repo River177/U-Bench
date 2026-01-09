@@ -594,8 +594,28 @@
         "filename": "Exp/UTANet_ESTF/UTANet_ESTF.py"
     },
     {
+        "modelname": "UTANet_SAE_ESTF",
+        "id": 123,
+        "filename": "Exp/UTANet_SAE_ESTF/UTANet_SAE_ESTF.py"
+    },
+    {
         "modelname": "UTANet_EAG_SAE_ESTF",
         "id": 122,
         "filename": "Exp/UTANet_EAG_SAE_ESTF/UTANet_EAG_SAE_ESTF.py"
+    },
+    {
+        "modelname": "UTANet_ConvNeXt",
+        "id": 124,
+        "filename": "Exp/UTANet_ConvNeXt/UTANet_ConvNeXt.py"
+    },
+    {
+        "modelname": "UTANet_ResNet50",
+        "id": 125,
+        "filename": "Exp/UTANet_ResNet50/UTANet_ResNet50.py"
+    },
+    {
+        "modelname": "UTANet_EdgeBranch",
+        "id": 126,
+        "filename": "Exp/UTANet_EdgeBranch/UTANet_EdgeBranch.py"
     }
 ]

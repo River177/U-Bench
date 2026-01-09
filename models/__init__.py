@@ -60,7 +60,11 @@ from .CNN.SegformerUTANet.SegFormerUTANet import segformer_utanet as SegFormerUT
 from .Exp.UTANet_EAG.UTANet_EAG import utanet_eag as UTANet_EAG
 from .Exp.UTANet_SAE.UTANet_SAE import utanet_sae as UTANet_SAE
 from .Exp.UTANet_ESTF.UTANet_ESTF import utanet_estf as UTANet_ESTF
+from .Exp.UTANet_SAE_ESTF.UTANet_SAE_ESTF import utanet_sae_estf as UTANet_SAE_ESTF
 from .Exp.UTANet_EAG_SAE_ESTF.UTANet_EAG_SAE_ESTF import utanet_eag_sae_estf as UTANet_EAG_SAE_ESTF
+from .Exp.UTANet_ConvNeXt.UTANet_ConvNeXt import utanet_convnext as UTANet_ConvNeXt
+from .Exp.UTANet_ResNet50.UTANet_ResNet50 import utanet_resnet50 as UTANet_ResNet50
+from .Exp.UTANet_EdgeBranch.UTANet_EdgeBranch import utanet_edge as UTANet_EdgeBranch
 
 from .Hybrid.AURA_Net.AURA_Net import aura_net as AURA_Net
 from .Hybrid.BEFUnet.BEFUnet import befunet as BEFUnet
