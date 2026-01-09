@@ -48,14 +48,12 @@ from .CNN.Perspective_Unet.Perspective_Unet import perspective_unet as Perspecti
 from .CNN.ESKNet.ESKNet import esknet as ESKNet
 from .CNN.CPCANet.CPCANet import cpcanet as CPCANet
 from .CNN.UTANet.UTANet import utanet as UTANet
-from .CNN.FUTANet.FUTANet import futanet as FUTANet
 from .CNN.DDS_UNet.DDS_UNet import dds_unet as DDS_UNet
 from .CNN.MCA_UNet.MCA_UNet import mca_unet as MCA_UNet
 from .CNN.MDSA_UNet.MDSA_UNet import mdsa_unet as MDSA_UNet
 from .CNN.U_KAN.U_KAN import u_kan as U_KAN
 from .CNN.ResU_KAN.ResU_KAN import resu_kan as ResU_KAN
 from .CNN.RAT_Net.RAT_Net import rat_net as RAT_Net
-from .CNN.SegformerUTANet.SegFormerUTANet import segformer_utanet as SegFormerUTANet
 
 from .Exp.UTANet_EAG.UTANet_EAG import utanet_eag as UTANet_EAG
 from .Exp.UTANet_SAE.UTANet_SAE import utanet_sae as UTANet_SAE
@@ -65,6 +63,10 @@ from .Exp.UTANet_EAG_SAE_ESTF.UTANet_EAG_SAE_ESTF import utanet_eag_sae_estf as 
 from .Exp.UTANet_ConvNeXt.UTANet_ConvNeXt import utanet_convnext as UTANet_ConvNeXt
 from .Exp.UTANet_ResNet50.UTANet_ResNet50 import utanet_resnet50 as UTANet_ResNet50
 from .Exp.UTANet_EdgeBranch.UTANet_EdgeBranch import utanet_edge as UTANet_EdgeBranch
+from .Exp.FUTANet.FUTANet import futanet as FUTANet
+from .Exp.SegformerUTANet.SegFormerUTANet import segformer_utanet as SegFormerUTANet
+from .Exp.VSSUTANet.VSSUTANet import vssutanet as VSSUTANet
+from .Exp.DualBranchVSSNet.DualBranchVSSNet import dualbranchvssnet as DualBranchVSSNet
 
 from .Hybrid.AURA_Net.AURA_Net import aura_net as AURA_Net
 from .Hybrid.BEFUnet.BEFUnet import befunet as BEFUnet
@@ -121,8 +123,6 @@ from .Mamba.VMUNet.VMUNet import vmunet as VMUNet
 from .Mamba.VMUNetV2.VMUNetV2 import vmunetv2 as VMUNetV2
 from .Mamba.CFM_UNet.CFM_UNet import cfm_unet as CFM_UNet
 from .Mamba.MedVKAN.MedVKAN import medvkan as MedVKAN
-from .Mamba.VSSUTANet.VSSUTANet import vssutanet as VSSUTANet
-from .Mamba.DualBranchVSSNet.DualBranchVSSNet import dualbranchvssnet as DualBranchVSSNet
 
 
 def load_model_lazily(config):
