@@ -617,5 +617,25 @@
         "modelname": "UTANet_EdgeBranch",
         "id": 126,
         "filename": "Exp/UTANet_EdgeBranch/UTANet_EdgeBranch.py"
+    },
+    {
+        "modelname": "MambaUTANet",
+        "id": 127,
+        "filename": "Exp/MambaUTANet/MambaUTANet.py"
+    },
+    {
+        "modelname": "UTANetPlusPlus",
+        "id": 128,
+        "filename": "Exp/UTANetPlusPlus/UTANetPlusPlus.py"
+    },
+    {
+        "modelname": "LightweightHierarchicalUTANet",
+        "id": 129,
+        "filename": "Exp/LightweightHierarchicalUTANet/LightweightHierarchicalUTANet.py"
+    },
+    {
+        "modelname": "UTANetPlusPlus_Micro",
+        "id": 130,
+        "filename": "Exp/UTANetPlusPlus_Micro/UTANetPlusPlus_Micro.py"
     }
 ]

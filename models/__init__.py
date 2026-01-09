@@ -67,6 +67,10 @@ from .Exp.FUTANet.FUTANet import futanet as FUTANet
 from .Exp.SegformerUTANet.SegFormerUTANet import segformer_utanet as SegFormerUTANet
 from .Exp.VSSUTANet.VSSUTANet import vssutanet as VSSUTANet
 from .Exp.DualBranchVSSNet.DualBranchVSSNet import dualbranchvssnet as DualBranchVSSNet
+from .Exp.MambaUTANet.MambaUTANet import mambautanet as MambaUTANet
+from .Exp.UTANetPlusPlus.UTANetPlusPlus import utanet_plusplus as UTANetPlusPlus
+from .Exp.LightweightHierarchicalUTANet.LightweightHierarchicalUTANet import lightweight_hierarchical_utanet as LightweightHierarchicalUTANet
+from .Exp.UTANetPlusPlus_Micro.UTANetPlusPlus_Micro import utanet_plusplus_micro as UTANetPlusPlus_Micro
 
 from .Hybrid.AURA_Net.AURA_Net import aura_net as AURA_Net
 from .Hybrid.BEFUnet.BEFUnet import befunet as BEFUnet
