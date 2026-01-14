@@ -655,5 +655,11 @@
         "id": 133,
         "deeps_supervision": 1,
         "filename": "Exp/UTANetPlusLK/UTANetPlusLK.py"
+    },
+    {
+        "modelname": "UTANetMamba",
+        "id": 134,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetMamba/UTANetMamba.py"
     }
 ]
