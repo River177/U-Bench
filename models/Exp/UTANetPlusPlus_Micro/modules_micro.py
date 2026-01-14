@@ -189,7 +189,7 @@ class LightFullScaleDecoder(nn.Module):
         
         # 为每个编码器层创建轻量化的特征转换
         self.transforms = nn.ModuleList()
-        source_sizes = [112, 56, 28, 14, 14]  # 编码器各层的空间尺寸（下采样后）
+        source_sizes = [224, 112, 56, 28, 14]  # 编码器各层的空间尺寸
         
         for i, (ch, src_size) in enumerate(zip(filters_enc, source_sizes)):
             transform = self._make_transform(ch, cat_channels, src_size, target_size)
@@ -212,7 +212,6 @@ class LightFullScaleDecoder(nn.Module):
     ) -> nn.Module:
         """创建特征转换模块"""
         # 通道转换（使用1x1卷积，轻量）
-        # 空间尺寸调整在forward中动态处理
         return nn.Sequential(
             nn.Conv2d(in_ch, out_ch, 1),
             nn.BatchNorm2d(out_ch),
@@ -225,29 +224,46 @@ class LightFullScaleDecoder(nn.Module):
         e2: torch.Tensor, 
         e3: torch.Tensor, 
         e4: torch.Tensor, 
-        e5: torch.Tensor
+        e5: torch.Tensor,
+        target_size: Tuple[int, int] = None
     ) -> torch.Tensor:
         """融合所有编码器特征"""
         features = [e1, e2, e3, e4, e5]
         transformed = []
         
-        for feat, transform in zip(features, self.transforms):
+        # 确定目标尺寸
+        if target_size is not None:
+            tgt_h, tgt_w = target_size
+        else:
+            tgt_h, tgt_w = self.target_size, self.target_size
+            
+        # print(f"DEBUG: Decoder forward - target_size passed: {target_size}, using: ({tgt_h}, {tgt_w})")
+        
+        for i, (feat, transform) in enumerate(zip(features, self.transforms)):
             # 先进行通道转换
             feat_transformed = transform(feat)
             
-            # 然后调整空间尺寸到target_size
-            if feat_transformed.shape[2] != self.target_size or feat_transformed.shape[3] != self.target_size:
+            # print(f"DEBUG: Feat {i} shape: {feat.shape} -> Transformed: {feat_transformed.shape}")
+            
+            # 然后调整空间尺寸到目标大小
+            if feat_transformed.shape[2:] != (tgt_h, tgt_w):
                 feat_transformed = F.interpolate(
                     feat_transformed, 
-                    size=(self.target_size, self.target_size), 
+                    size=(tgt_h, tgt_w), 
                     mode='bilinear', 
                     align_corners=True
                 )
-            
             transformed.append(feat_transformed)
         
         # 拼接并融合
-        concat = torch.cat(transformed, dim=1)
+        try:
+            concat = torch.cat(transformed, dim=1)
+        except Exception as e:
+            print(f"ERROR in torch.cat: {e}")
+            for i, t in enumerate(transformed):
+                print(f"  Tensor {i}: {t.shape}")
+            raise e
+            
         out = self.fusion(concat)
         
         return out

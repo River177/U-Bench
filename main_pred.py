@@ -193,6 +193,8 @@ def predict_and_save(args, model, logger):
             # 获取图像名称
             if 'name' in sampled_batch:
                 image_names = sampled_batch['name']
+            elif 'case' in sampled_batch:
+                image_names = sampled_batch['case']
             else:
                 # 如果没有名称，使用索引
                 image_names = [f"image_{i_batch * args.batch_size + i}" for i in range(input_images.size(0))]

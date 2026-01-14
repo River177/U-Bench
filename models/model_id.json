@@ -637,5 +637,11 @@
         "modelname": "UTANetPlusPlus_Micro",
         "id": 130,
         "filename": "Exp/UTANetPlusPlus_Micro/UTANetPlusPlus_Micro.py"
+    },
+    {
+        "modelname": "UTANetPlusFast",
+        "id": 131,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetPlusFast/UTANetPlusFast.py"
     }
 ]

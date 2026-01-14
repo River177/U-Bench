@@ -78,23 +78,20 @@ class LightweightEncoder(nn.Module):
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, ...]:
         """
         Returns:
-            e1-e5: 各层编码器特征（下采样后的特征）
+            e1-e5: 各层编码器特征
         """
         x = self.stem(x)  # (B, 16, 224, 224)
         
-        e1, skip1 = self.encoder1(x)    # e1: (B, 16, 112, 112), skip: (B, 16, 224, 224)
-        e2, skip2 = self.encoder2(e1)   # e2: (B, 32, 56, 56), skip: (B, 16, 112, 112)
-        e3, skip3 = self.encoder3(e2)   # e3: (B, 64, 28, 28), skip: (B, 32, 56, 56)
-        e4, skip4 = self.encoder4(e3)   # e4: (B, 128, 14, 14), skip: (B, 64, 28, 28)
-        e5, _ = self.encoder5(e4)       # e5: (B, 256, 14, 14)
+        e1, skip1 = self.encoder1(x)    # (B, 16, 112, 112), skip: (B, 16, 224, 224)
+        e2, skip2 = self.encoder2(e1)   # (B, 32, 56, 56), skip: (B, 16, 112, 112)
+        e3, skip3 = self.encoder3(e2)   # (B, 64, 28, 28), skip: (B, 32, 56, 56)
+        e4, skip4 = self.encoder4(e3)   # (B, 128, 14, 14), skip: (B, 64, 28, 28)
+        e5, _ = self.encoder5(e4)       # (B, 256, 14, 14)
         
         e5 = self.bottleneck(e5)        # (B, 256, 14, 14)
         
-        # 返回编码器各层特征（用于全尺度连接）
-        # 返回顺序: [e1输出, e2输出, e3输出, e4输出, e5输出]
-        # 对应尺寸: [112x112, 56x56, 28x28, 14x14, 14x14]
-        # 对应通道: [16, 32, 64, 128, 256]
-        return e1, e2, e3, e4, e5
+        # 返回跳跃连接特征
+        return skip1, skip2, skip3, skip4, e5
 
 
 class UTANetPlusPlus_Micro(nn.Module):
@@ -131,21 +128,18 @@ class UTANetPlusPlus_Micro(nn.Module):
         
         # 计算各层通道数
         channel_mult = [1, 2, 4, 8, 16]
-        encoder_channels = [base_channels * m for m in channel_mult]
+        self.filters = [base_channels * m for m in channel_mult]
         # [16, 32, 64, 128, 256] when base_channels=16
         
         # ========== 轻量化编码器 ==========
         self.encoder = LightweightEncoder(n_channels, base_channels, channel_mult)
         
-        # 实际编码器输出的通道数（用于解码器）
-        # 编码器返回: [e1, e2, e3, e4, e5]
-        # 通道数: [16, 32, 64, 128, 256]
-        self.filters = [base_channels, base_channels*2, base_channels*4, base_channels*8, base_channels*16]
-        
         # ========== 微型MoE模块（可选）==========
         if use_moe:
             # 特征融合到统一尺寸
-            fusion_ch = sum(self.filters[:4])  # 16+32+64+128=240
+            # 编码器返回的skip连接通道数为: [16, 16, 32, 64]
+            skip_channels = [self.filters[0], self.filters[0], self.filters[1], self.filters[2]]
+            fusion_ch = sum(skip_channels)  # 16+16+32+64=128
             self.fuse = nn.Sequential(
                 nn.Conv2d(fusion_ch, 32, 1, bias=False),
                 nn.BatchNorm2d(32),
@@ -155,39 +149,42 @@ class UTANetPlusPlus_Micro(nn.Module):
             # 微型MoE
             self.moe = MoEMicro(emb_size=32)
             
-            # Docker路由器（轻量化）
-            self.docker1 = self._create_docker(32, self.filters[0])
-            self.docker2 = self._create_docker(32, self.filters[1])
-            self.docker3 = self._create_docker(32, self.filters[2])
-            self.docker4 = self._create_docker(32, self.filters[3])
+            # Docker路由器（轻量化）- 输出到skip连接的通道数
+            self.docker1 = self._create_docker(32, skip_channels[0])  # 16
+            self.docker2 = self._create_docker(32, skip_channels[1])  # 16
+            self.docker3 = self._create_docker(32, skip_channels[2])  # 32
+            self.docker4 = self._create_docker(32, skip_channels[3])  # 64
         
         # ========== 轻量化全尺度解码器 ==========
         decoder_channels = [c // 2 for c in self.filters]  # 更小的解码器通道
         # [8, 16, 32, 64, 128]
         
+        # 编码器实际返回的skip连接通道数: [16, 16, 32, 64, 256]
+        encoder_skip_channels = [self.filters[0], self.filters[0], self.filters[1], self.filters[2], self.filters[4]]
+        
         self.decoder4 = LightFullScaleDecoder(
-            filters_enc=self.filters,
+            filters_enc=encoder_skip_channels,
             target_size=28,
             cat_channels=cat_channels,
             out_channels=decoder_channels[3]  # 64
         )
         
         self.decoder3 = LightFullScaleDecoder(
-            filters_enc=self.filters,
+            filters_enc=encoder_skip_channels,
             target_size=56,
             cat_channels=cat_channels,
             out_channels=decoder_channels[2]  # 32
         )
         
         self.decoder2 = LightFullScaleDecoder(
-            filters_enc=self.filters,
+            filters_enc=encoder_skip_channels,
             target_size=112,
             cat_channels=cat_channels,
             out_channels=decoder_channels[1]  # 16
         )
         
         self.decoder1 = LightFullScaleDecoder(
-            filters_enc=self.filters,
+            filters_enc=encoder_skip_channels,
             target_size=224,
             cat_channels=cat_channels,
             out_channels=decoder_channels[0]  # 8
@@ -254,68 +251,77 @@ class UTANetPlusPlus_Micro(nn.Module):
         """
         # ========== 编码器 ==========
         e1, e2, e3, e4, e5 = self.encoder(x)
-        # e1: (B, 16, 112, 112) - encoder1输出
-        # e2: (B, 32, 56, 56) - encoder2输出
-        # e3: (B, 64, 28, 28) - encoder3输出
-        # e4: (B, 128, 14, 14) - encoder4输出
-        # e5: (B, 256, 14, 14) - bottleneck输出
+        # 编码器返回的是skip连接，通道数为：
+        # e1: (B, 16, H, W)
+        # e2: (B, 16, H/2, W/2)
+        # e3: (B, 32, H/4, W/4)
+        # e4: (B, 64, H/8, W/8)
+        # e5: (B, 256, H/16, W/16)
+        
+        # 获取各层尺寸
+        s1 = e1.shape[2:]
+        s2 = e2.shape[2:]
+        s3 = e3.shape[2:]
+        s4 = e4.shape[2:]
+        
+        # print(f"DEBUG: Input shapes - s1:{s1}, s2:{s2}, s3:{s3}, s4:{s4}")
         
         # 初始化MoE损失
         aux_loss = torch.tensor(0.0, device=x.device)
         
         # ========== 微型MoE路由 ==========
         if self.use_moe:
-            # 特征融合到统一尺寸 (56x56)
-            # e1: 112x112 -> 56x56 (下采样)
-            # e2: 56x56 -> 56x56 (保持)
-            # e3: 28x28 -> 56x56 (上采样)
-            # e4: 14x14 -> 56x56 (上采样)
-            e1_resized = F.interpolate(e1, size=(56, 56), mode='bilinear', align_corners=True)
-            e2_resized = e2  # 已经是56x56
-            e3_resized = F.interpolate(e3, size=(56, 56), mode='bilinear', align_corners=True)
-            e4_resized = F.interpolate(e4, size=(56, 56), mode='bilinear', align_corners=True)
+            # 特征融合到统一尺寸 (以e3尺寸为基准，通常为H/4)
+            # 例如输入224->56, 输入256->64
+            target_h, target_w = s3
             
-            # 拼接并融合
+            e1_resized = F.interpolate(e1, size=(target_h, target_w), mode='bilinear', align_corners=True)
+            e2_resized = F.interpolate(e2, size=(target_h, target_w), mode='bilinear', align_corners=True)
+            e3_resized = e3 # 已经是基准尺寸
+            e4_resized = F.interpolate(e4, size=(target_h, target_w), mode='bilinear', align_corners=True)
+            
+            # 拼接并融合 (16+16+32+64=128 channels)
             fused = torch.cat([e1_resized, e2_resized, e3_resized, e4_resized], dim=1)
-            fused = self.fuse(fused)  # (B, 32, 56, 56)
+            fused = self.fuse(fused)  # (B, 32, H/4, W/4)
             
             # MoE路由
             o1, o2, o3, o4, loss = self.moe(fused)
             aux_loss = loss
             
-            # Docker特征分发
-            o1 = self.docker1(o1)  # (B, 16, 56, 56)
-            o2 = self.docker2(o2)  # (B, 32, 56, 56)
-            o3 = self.docker3(o3)  # (B, 64, 56, 56)
-            o4 = self.docker4(o4)  # (B, 128, 56, 56)
+            # Docker特征分发 - 匹配编码器的实际通道数
+            o1 = self.docker1(o1)  # (B, 16, H/4, W/4)
+            o2 = self.docker2(o2)  # (B, 16, H/4, W/4)
+            o3 = self.docker3(o3)  # (B, 32, H/4, W/4)
+            o4 = self.docker4(o4)  # (B, 64, H/4, W/4)
             
-            # 调整空间尺寸到解码器需要的尺寸
-            o1 = F.interpolate(o1, size=(112, 112), mode='bilinear', align_corners=True)
-            # o2 保持 56x56
-            o3 = F.interpolate(o3, size=(28, 28), mode='bilinear', align_corners=True)
-            o4 = F.interpolate(o4, size=(14, 14), mode='bilinear', align_corners=True)
+            # 调整空间尺寸到对应的编码器层尺寸
+            o1 = F.interpolate(o1, size=s1, mode='bilinear', align_corners=True)
+            o2 = F.interpolate(o2, size=s2, mode='bilinear', align_corners=True)
+            o3 = F.interpolate(o3, size=s3, mode='bilinear', align_corners=True)
+            o4 = F.interpolate(o4, size=s4, mode='bilinear', align_corners=True)
         else:
             o1, o2, o3, o4 = e1, e2, e3, e4
         
         # ========== 全尺度解码器 ==========
-        # 每个解码器都接收所有编码器特征，然后输出到不同尺度
-        # 解码器4: 28x28
-        d4 = self.decoder4(o1, o2, o3, o4, e5)
+        # 传递动态目标尺寸
+        
+        # 解码器4: s4 (H/8)
+        d4 = self.decoder4(o1, o2, o3, o4, e5, target_size=s4)
         d4 = self.att4(d4, d4)
         d4 = self.eca4(d4)
         
-        # 解码器3: 56x56
-        d3 = self.decoder3(o1, o2, o3, o4, e5)
+        # 解码器3: s3 (H/4)
+        d3 = self.decoder3(o1, o2, o3, d4, e5, target_size=s3)
         d3 = self.att3(d3, d3)
         d3 = self.eca3(d3)
         
-        # 解码器2: 112x112
-        d2 = self.decoder2(o1, o2, o3, o4, e5)
+        # 解码器2: s2 (H/2)
+        d2 = self.decoder2(o1, o2, d3, d4, e5, target_size=s2)
         d2 = self.att2(d2, d2)
         d2 = self.eca2(d2)
         
-        # 解码器1: 224x224
-        d1 = self.decoder1(o1, o2, o3, o4, e5)
+        # 解码器1: s1 (H)
+        d1 = self.decoder1(o1, d2, d3, d4, e5, target_size=s1)
         d1 = self.att1(d1, d1)
         d1 = self.eca1(d1)
         
@@ -328,10 +334,9 @@ class UTANetPlusPlus_Micro(nn.Module):
 def utanet_plusplus_micro(
     input_channel: int = 3,
     num_classes: int = 1,
+    pretrained: bool = True,
     base_channels: int = 16,
-    use_moe: bool = True,
-    deep_supervision: bool = True,
-    pretrained: bool = False  # 兼容训练框架，但此模型不使用预训练权重
+    deep_supervision: bool = True
 ):
     """
     创建 UTANet++ Micro 模型
@@ -339,14 +344,16 @@ def utanet_plusplus_micro(
     Args:
         input_channel: 输入通道数
         num_classes: 输出类别数
+        pretrained: 是否使用MoE模块（保持与U-Bench框架兼容）
         base_channels: 基础通道数（越小越轻量）
-        use_moe: 是否使用MoE模块
         deep_supervision: 是否启用深度监督
-        pretrained: 是否使用预训练权重（此模型不使用，仅为兼容性保留）
         
     Returns:
         UTANet++ Micro 模型实例
     """
+    # pretrained参数在这里用于控制是否使用MoE模块
+    use_moe = pretrained
+    
     return UTANetPlusPlus_Micro(
         n_channels=input_channel,
         n_classes=num_classes,

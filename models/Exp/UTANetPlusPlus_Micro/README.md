@@ -51,17 +51,36 @@ AxialDepthwiseConv(dim, kernel_size=7)
 
 ## 使用方法
 
+### U-Bench 训练框架集成
+
+模型已集成到 U-Bench 训练框架，可直接通过命令行使用：
+
+```bash
+python main.py --model UTANetPlusPlus_Micro \
+    --base_dir ./data/xca_dataset \
+    --dataset_name xca \
+    --train_file_dir train.txt \
+    --val_file_dir val.txt \
+    --batch_size 8 \
+    --max_epochs 100 \
+    --base_lr 0.01 \
+    --img_size 224 \
+    --num_classes 1 \
+    --input_channel 3 \
+    --pretrained  # 启用 MoE 模块
+```
+
 ### 基本使用
 
 ```python
-from exp.UTANetPlusPlus_Micro import utanet_plusplus_micro, utanet_plusplus_nano
+from models.Exp.UTANetPlusPlus_Micro import utanet_plusplus_micro, utanet_plusplus_nano
 
-# 创建 Micro 版本
+# 创建 Micro 版本（U-Bench 兼容接口）
 model = utanet_plusplus_micro(
     input_channel=3,
     num_classes=1,
+    pretrained=True,  # 控制是否使用 MoE 模块
     base_channels=16,
-    use_moe=True,
     deep_supervision=True
 )
 
@@ -72,7 +91,7 @@ model_nano = utanet_plusplus_nano(input_channel=3, num_classes=1)
 ### 自定义配置
 
 ```python
-from exp.UTANetPlusPlus_Micro import UTANetPlusPlus_Micro
+from models.Exp.UTANetPlusPlus_Micro import UTANetPlusPlus_Micro
 
 model = UTANetPlusPlus_Micro(
     n_channels=3,           # 输入通道数
@@ -83,6 +102,15 @@ model = UTANetPlusPlus_Micro(
     cat_channels=16         # 全尺度连接的拼接通道数
 )
 ```
+
+### 参数说明
+
+- **input_channel/n_channels**: 输入图像通道数（RGB=3，灰度=1）
+- **num_classes/n_classes**: 分割类别数（二分类=1，多分类>1）
+- **pretrained**: U-Bench 框架参数，控制是否使用 MoE 模块
+- **base_channels**: 基础通道数，越小模型越轻量（推荐：16=标准，8=极轻量）
+- **deep_supervision**: 是否启用深度监督，提升训练效果
+- **cat_channels**: 全尺度连接的通道数，影响解码器复杂度
 
 ## 架构图
 
