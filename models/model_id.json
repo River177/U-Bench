@@ -643,5 +643,17 @@
         "id": 131,
         "deeps_supervision": 1,
         "filename": "Exp/UTANetPlusFast/UTANetPlusFast.py"
+    },
+    {
+        "modelname": "UTANetPlusHybrid",
+        "id": 132,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetPlusHybrid/UTANetPlusHybrid.py"
+    },
+    {
+        "modelname": "UTANetPlusLK",
+        "id": 133,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetPlusLK/UTANetPlusLK.py"
     }
 ]

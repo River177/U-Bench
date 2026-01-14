@@ -72,6 +72,8 @@ from .Exp.UTANetPlusPlus.UTANetPlusPlus import utanet_plusplus as UTANetPlusPlus
 from .Exp.LightweightHierarchicalUTANet.LightweightHierarchicalUTANet import lightweight_hierarchical_utanet as LightweightHierarchicalUTANet
 from .Exp.UTANetPlusPlus_Micro.UTANetPlusPlus_Micro import utanet_plusplus_micro as UTANetPlusPlus_Micro
 from .Exp.UTANetPlusFast.UTANetPlusFast import utanet_plus_fast as UTANetPlusFast
+from .Exp.UTANetPlusHybrid.UTANetPlusHybrid import utanet_plus_hybrid as UTANetPlusHybrid
+from .Exp.UTANetPlusLK.UTANetPlusHybrid import utanet_plus_lk as UTANetPlusLK
 
 from .Hybrid.AURA_Net.AURA_Net import aura_net as AURA_Net
 from .Hybrid.BEFUnet.BEFUnet import befunet as BEFUnet
