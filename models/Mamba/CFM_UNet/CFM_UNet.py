@@ -746,8 +746,13 @@ class Fusion(nn.Module):
         self.se = SELayer(output_channels)
 
     def forward(self, x1, x2):
-        # x1: input from the first pathway
-        # x2: input from the second pathway
+        # x1: input from the first pathway (VSSM)
+        # x2: input from the second pathway (ResNet)
+        
+        # Handle spatial size mismatch by interpolating x1 to match x2
+        if x1.shape[2:] != x2.shape[2:]:
+            x1 = F.interpolate(x1, size=x2.shape[2:], mode='bilinear', align_corners=False)
+        
         # Perform fusion
         fusion_input = torch.cat((x1, x2), dim=1)
         fusion_output = self.conv1(fusion_input)
@@ -849,18 +854,30 @@ class CFMUNet(nn.Module):
         x5 = self.Fusion5(x5_0.permute(0, 3, 1, 2), x5_1)
  ######################################################################       
         x6 = nn.Upsample(scale_factor = 2, mode ="bilinear")(x5)
+        # Align x6 with x4 if sizes don't match
+        if x6.shape[2:] != x4.shape[2:]:
+            x6 = F.interpolate(x6, size=x4.shape[2:], mode='bilinear', align_corners=False)
         x6 = torch.cat([x6,x4], dim = 1)
         x6 = self.uplayer1(x6)
         
         x7 = nn.Upsample(scale_factor = 2, mode ="bilinear")(x6)
+        # Align x7 with x3 if sizes don't match
+        if x7.shape[2:] != x3.shape[2:]:
+            x7 = F.interpolate(x7, size=x3.shape[2:], mode='bilinear', align_corners=False)
         x7 = torch.cat([x7,x3], dim = 1)
         x7 = self.uplayer2(x7)
         
         x8 = nn.Upsample(scale_factor = 2, mode ="bilinear")(x7)
+        # Align x8 with x2 if sizes don't match
+        if x8.shape[2:] != x2.shape[2:]:
+            x8 = F.interpolate(x8, size=x2.shape[2:], mode='bilinear', align_corners=False)
         x8 = torch.cat([x8,x2], dim = 1)
         x8 = self.uplayer3(x8)
         
         x9 = nn.Upsample(scale_factor = 2, mode ="bilinear")(x8)
+        # Align x9 with x1 if sizes don't match
+        if x9.shape[2:] != x1.shape[2:]:
+            x9 = F.interpolate(x9, size=x1.shape[2:], mode='bilinear', align_corners=False)
         x9 = torch.cat([x9,x1], dim = 1)
         x9 = self.uplayer4(x9)
         x9 = self.finallayer(x9)

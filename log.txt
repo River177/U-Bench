@@ -1,0 +1,274 @@
+====================================================================================================
+MODEL METRICS COMPUTATION
+====================================================================================================
+
+Configuration:
+  Device:     cuda
+  Models:     9
+  GPU:        NVIDIA GeForce RTX 3070 Ti Laptop GPU
+
+Model-specific input sizes:
+  CFM_UNet             (1, 3, 224, 224)
+  CSCAUNet             (1, 3, 224, 224)
+  CSWin_UNet           (1, 3, 256, 256)
+  ERDUnet              (1, 3, 256, 256)
+  GH_UNet              (1, 3, 224, 224)
+  MDSA_UNet            (1, 3, 256, 256)
+  Perspective_Unet     (1, 3, 256, 256)
+  UNetV2               (1, 3, 224, 224)
+  UTANetMamba          (1, 3, 224, 224)
+
+[1/9] Processing CFM_UNet...
+  Input size: (1, 3, 224, 224)
+
+======================================================================
+Model: CFM_UNet
+======================================================================
+Loading model...
+C:\Users\River\.conda\envs\d2l\lib\site-packages\timm\models\layers\__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+C:\Users\River\.conda\envs\d2l\lib\site-packages\timm\models\registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+D:\曲线分割\U-Bench\models\CNN\UNet_v2\pvtv2.py:388: UserWarning: Overwriting pvt_v2_b0 in registry with models.CNN.UNet_v2.pvtv2.pvt_v2_b0. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  class pvt_v2_b0(PyramidVisionTransformerImpr):
+D:\曲线分割\U-Bench\models\CNN\UNet_v2\pvtv2.py:398: UserWarning: Overwriting pvt_v2_b1 in registry with models.CNN.UNet_v2.pvtv2.pvt_v2_b1. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  class pvt_v2_b1(PyramidVisionTransformerImpr):
+D:\曲线分割\U-Bench\models\CNN\UNet_v2\pvtv2.py:406: UserWarning: Overwriting pvt_v2_b2 in registry with models.CNN.UNet_v2.pvtv2.pvt_v2_b2. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  class pvt_v2_b2(PyramidVisionTransformerImpr):
+D:\曲线分割\U-Bench\models\CNN\UNet_v2\pvtv2.py:414: UserWarning: Overwriting pvt_v2_b3 in registry with models.CNN.UNet_v2.pvtv2.pvt_v2_b3. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  class pvt_v2_b3(PyramidVisionTransformerImpr):
+D:\曲线分割\U-Bench\models\CNN\UNet_v2\pvtv2.py:422: UserWarning: Overwriting pvt_v2_b4 in registry with models.CNN.UNet_v2.pvtv2.pvt_v2_b4. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  class pvt_v2_b4(PyramidVisionTransformerImpr):
+D:\曲线分割\U-Bench\models\CNN\UNet_v2\pvtv2.py:431: UserWarning: Overwriting pvt_v2_b5 in registry with models.CNN.UNet_v2.pvtv2.pvt_v2_b5. This is because the name being registered conflicts with an existing name. Please check if this is not expected.
+  class pvt_v2_b5(PyramidVisionTransformerImpr):
+  Failed to load CFM_UNet: No module named 'einops'
+  Full traceback:
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 203, in load_model
+    from models.Mamba.CFM_UNet.CFM_UNet import cfm_unet
+  File "D:\曲线分割\U-Bench\models\__init__.py", line 22, in <module>
+    from .CNN.Egeunet.Egeunet import EGEUNet as Egeunet # (input_channel=3, num_classes=1)
+  File "D:\曲线分割\U-Bench\models\CNN\Egeunet\Egeunet.py", line 4, in <module>
+    from einops import rearrange
+ModuleNotFoundError: No module named 'einops'
+
+[2/9] Processing CSCAUNet...
+  Input size: (1, 3, 224, 224)
+
+======================================================================
+Model: CSCAUNet
+======================================================================
+Loading model...
+✓ Model loaded successfully
+
+1. Computing Parameters...
+   Total:      35,274,795 (35.27M)
+   Trainable:  35,274,795 (35.27M)
+
+2. Computing FLOPs...
+   FLOPs: 10,517,017,824.0 (10.52G)
+   Reloading model for FPS measurement...
+
+3. Measuring FPS...
+   Mean Time: 23.30 ms (±3.82 ms)
+   FPS:       42.91
+
+[3/9] Processing CSWin_UNet...
+  Input size: (1, 3, 256, 256)
+
+======================================================================
+Model: CSWin_UNet
+======================================================================
+Loading model...
+  Failed to load CSWin_UNet: No module named 'einops'
+  Full traceback:
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 209, in load_model
+    from models.Hybrid.CSWin_UNet.CSWin_UNet import cswin_unet
+  File "D:\曲线分割\U-Bench\models\__init__.py", line 22, in <module>
+    from .CNN.Egeunet.Egeunet import EGEUNet as Egeunet # (input_channel=3, num_classes=1)
+  File "D:\曲线分割\U-Bench\models\CNN\Egeunet\Egeunet.py", line 4, in <module>
+    from einops import rearrange
+ModuleNotFoundError: No module named 'einops'
+
+[4/9] Processing ERDUnet...
+  Input size: (1, 3, 256, 256)
+
+======================================================================
+Model: ERDUnet
+======================================================================
+Loading model...
+  Failed to load ERDUnet: 'models'
+  Full traceback:
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 212, in load_model
+    from models.CNN.ERDUnet.ERDUnet import ERDUnet
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 914, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1407, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1373, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1239, in __iter__
+  File "<frozen importlib._bootstrap_external>", line 1227, in _recalculate
+  File "<frozen importlib._bootstrap_external>", line 1223, in _get_parent_path
+KeyError: 'models'
+
+[5/9] Processing GH_UNet...
+  Input size: (1, 3, 224, 224)
+
+======================================================================
+Model: GH_UNet
+======================================================================
+Loading model...
+  Failed to load GH_UNet: 'models'
+  Full traceback:
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 215, in load_model
+    from models.CNN.GH_UNet.GH_UNet import gh_unet
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 914, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1407, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1373, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1239, in __iter__
+  File "<frozen importlib._bootstrap_external>", line 1227, in _recalculate
+  File "<frozen importlib._bootstrap_external>", line 1223, in _get_parent_path
+KeyError: 'models'
+
+[6/9] Processing MDSA_UNet...
+  Input size: (1, 3, 256, 256)
+
+======================================================================
+Model: MDSA_UNet
+======================================================================
+Loading model...
+  Failed to load MDSA_UNet: 'models'
+  Full traceback:
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 218, in load_model
+    from models.CNN.MDSA_UNet.MDSA_UNet import mdsa_unet
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 914, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1407, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1373, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1239, in __iter__
+  File "<frozen importlib._bootstrap_external>", line 1227, in _recalculate
+  File "<frozen importlib._bootstrap_external>", line 1223, in _get_parent_path
+KeyError: 'models'
+
+[7/9] Processing Perspective_Unet...
+  Input size: (1, 3, 256, 256)
+
+======================================================================
+Model: Perspective_Unet
+======================================================================
+Loading model...
+  Failed to load Perspective_Unet: 'models'
+  Full traceback:
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 221, in load_model
+    from models.CNN.Perspective_Unet.Perspective_Unet import perspective_unet
+  File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 914, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1407, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1373, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1239, in __iter__
+  File "<frozen importlib._bootstrap_external>", line 1227, in _recalculate
+  File "<frozen importlib._bootstrap_external>", line 1223, in _get_parent_path
+KeyError: 'models'
+
+[8/9] Processing UNetV2...
+  Input size: (1, 3, 224, 224)
+
+======================================================================
+Model: UNetV2
+======================================================================
+Loading model...
+Downloading: "https://drive.usercontent.google.com/download?id=1l60Nzd2EQNZWbMHkvItDUUUp6KTlD0vt&export=download&authuser=0&confirm=t&uuid=5d180c6f-7198-45f1-9c9d-8d3da368d624&at=AN8xHoryoBlKHMU5bWKsn0x4n5UW:1752332826897" to C:\Users\River/.cache\torch\hub\checkpoints\download
+  Failed to load UNetV2: <urlopen error [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。>
+  Full traceback:
+Traceback (most recent call last):
+  File "C:\Users\River\.conda\envs\d2l\lib\urllib\request.py", line 1354, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "C:\Users\River\.conda\envs\d2l\lib\http\client.py", line 1256, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "C:\Users\River\.conda\envs\d2l\lib\http\client.py", line 1302, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "C:\Users\River\.conda\envs\d2l\lib\http\client.py", line 1251, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\River\.conda\envs\d2l\lib\http\client.py", line 1011, in _send_output
+    self.send(msg)
+  File "C:\Users\River\.conda\envs\d2l\lib\http\client.py", line 951, in send
+    self.connect()
+  File "C:\Users\River\.conda\envs\d2l\lib\http\client.py", line 1418, in connect
+    super().connect()
+  File "C:\Users\River\.conda\envs\d2l\lib\http\client.py", line 922, in connect
+    self.sock = self._create_connection(
+  File "C:\Users\River\.conda\envs\d2l\lib\socket.py", line 820, in create_connection
+    raise err
+  File "C:\Users\River\.conda\envs\d2l\lib\socket.py", line 808, in create_connection
+    sock.connect(sa)
+TimeoutError: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 225, in load_model
+    model = UNetV2(input_channel=3, num_classes=1)
+  File "D:\曲线分割\U-Bench\models\CNN\UNet_v2\UNet_v2.py", line 120, in __init__
+    self.encoder = Encoder(pretrained_path)
+  File "D:\曲线分割\U-Bench\models\CNN\UNet_v2\UNet_v2.py", line 72, in __init__
+    save_model = load_state_dict_from_url(pretrain_path, progress=True) #, weights_only=True)
+  File "C:\Users\River\.conda\envs\d2l\lib\site-packages\torch\hub.py", line 765, in load_state_dict_from_url
+    download_url_to_file(url, cached_file, hash_prefix, progress=progress)
+  File "C:\Users\River\.conda\envs\d2l\lib\site-packages\torch\hub.py", line 624, in download_url_to_file
+    u = urlopen(req)
+  File "C:\Users\River\.conda\envs\d2l\lib\urllib\request.py", line 222, in urlopen
+    return opener.open(url, data, timeout)
+  File "C:\Users\River\.conda\envs\d2l\lib\urllib\request.py", line 525, in open
+    response = self._open(req, data)
+  File "C:\Users\River\.conda\envs\d2l\lib\urllib\request.py", line 542, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+  File "C:\Users\River\.conda\envs\d2l\lib\urllib\request.py", line 502, in _call_chain
+    result = func(*args)
+  File "C:\Users\River\.conda\envs\d2l\lib\urllib\request.py", line 1397, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+  File "C:\Users\River\.conda\envs\d2l\lib\urllib\request.py", line 1357, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。>
+
+[9/9] Processing UTANetMamba...
+  Input size: (1, 3, 224, 224)
+
+======================================================================
+Model: UTANetMamba
+======================================================================
+Loading model...
+  Failed to load UTANetMamba: No module named 'einops'
+  Full traceback:
+Traceback (most recent call last):
+  File ".\scripts\compute_model_metrics.py", line 227, in load_model
+    from models.Exp.UTANetMamba.UTANetMamba import utanet_mamba
+  File "D:\曲线分割\U-Bench\models\__init__.py", line 22, in <module>
+    from .CNN.Egeunet.Egeunet import EGEUNet as Egeunet # (input_channel=3, num_classes=1)
+  File "D:\曲线分割\U-Bench\models\CNN\Egeunet\Egeunet.py", line 4, in <module>
+    from einops import rearrange
+ModuleNotFoundError: No module named 'einops'
+
+==============================================================================================================
+SUMMARY TABLE
+==============================================================================================================
+Model                Input      Params          FLOPs           FPS          Time (ms)   
+--------------------------------------------------------------------------------------------------------------
+CSCAUNet             224x224    35.27M          10.52G          42.91        23.30       
+==============================================================================================================
+
+✓ Results saved to: D:\曲线分割\U-Bench\model_metrics.csv
+
+====================================================================================================
+✓ All computations complete!
+====================================================================================================
+
+Log saved to: D:\曲线分割\U-Bench\log.txt
