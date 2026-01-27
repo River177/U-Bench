@@ -661,5 +661,29 @@
         "id": 134,
         "deeps_supervision": 1,
         "filename": "Exp/UTANetMamba/UTANetMamba.py"
+    },
+    {
+        "modelname": "UTANetMamba_Ablation1",
+        "id": 135,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetMamba_Ablation1/UTANetMamba_Ablation1.py"
+    },
+    {
+        "modelname": "UTANetMamba_Ablation2",
+        "id": 136,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetMamba_Ablation2/UTANetMamba_Ablation2.py"
+    },
+    {
+        "modelname": "UTANetMamba_Ablation3",
+        "id": 137,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetMamba_Ablation3/UTANetMamba_Ablation3.py"
+    },
+    {
+        "modelname": "UTANetMamba_Ablation4",
+        "id": 138,
+        "deeps_supervision": 1,
+        "filename": "Exp/UTANetMamba_Ablation4/UTANetMamba_Ablation4.py"
     }
 ]
