@@ -79,6 +79,10 @@ from .Exp.UTANetMamba_Ablation1.UTANetMamba_Ablation1 import utanet_mamba_ablati
 from .Exp.UTANetMamba_Ablation2.UTANetMamba_Ablation2 import utanet_mamba_ablation2 as UTANetMamba_Ablation2
 from .Exp.UTANetMamba_Ablation3.UTANetMamba_Ablation3 import utanet_mamba_ablation3 as UTANetMamba_Ablation3
 from .Exp.UTANetMamba_Ablation4.UTANetMamba_Ablation4 import utanet_mamba_ablation4 as UTANetMamba_Ablation4
+from .Exp.UTANetMamba_K1.UTANetMamba_K1 import utanet_mamba_k1 as UTANetMamba_K1
+from .Exp.UTANetMamba_K2.UTANetMamba_K2 import utanet_mamba_k2 as UTANetMamba_K2
+from .Exp.UTANetMamba_K3.UTANetMamba_K3 import utanet_mamba_k3 as UTANetMamba_K3
+from .Exp.UTANetMamba_K4.UTANetMamba_K4 import utanet_mamba_k4 as UTANetMamba_K4
 
 from .Hybrid.AURA_Net.AURA_Net import aura_net as AURA_Net
 from .Hybrid.BEFUnet.BEFUnet import befunet as BEFUnet
